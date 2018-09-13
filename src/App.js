@@ -25,11 +25,6 @@ const Button = props => {
   );
 };
 
-const Dot = props => {
-  console.log(props);
-  return <div className="dot" {...props} />;
-};
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -49,41 +44,10 @@ class App extends Component {
     };
   }
 
-  componentDidMount() {
-    //this.generateDot();
-  }
+  componentDidMount() {}
 
   toggleGame(event) {
-    //this.setState({started: true}, this.placeDot());
-  }
-
-  generateDot() {
-    const {dot} = this.state;
-    const dotSize = this.getRandomIntInclusive(dot.minWidth, dot.maxWidth);
-    const dotStyles = {
-      height: dotSize,
-      width: dotSize,
-    };
-    // create div dimensions applied
-    // place randomly at top of screen
-    //console.log('dot...', dotStyles);
-    return <Dot className="dot" style={dotStyles} />;
-  }
-
-  placeDot() {
-    const appMain = document.querySelector('.app-main');
-    //const appMainDimensions = appMain.getBoundingClientRect();
-    //console.log(appMainDimensions);
-    // find the react way to make this work
-    ReactDOM.render(this.generateDot(), appMain);
-  }
-
-  getRandomIntInclusive(min, max) {
-    if (!min || !max) return console.warn('min & max required');
-    // max and minimum is inclusive
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    this.setState({started: true}, console.log('toggle'));
   }
 
   render() {

@@ -5,11 +5,11 @@ let dotId = 1;
 let dotCount = 1;
 let dotList = [];
 let minVelocity = 1;
-let maxVelocity = 10;
+let maxVelocity = 3;
 let minWidth = 10;
-let maxWidth = 100;
+let maxWidth = 30;
 
-function Dot(dotId, width, y, x, velocity, color, status) {
+function Dot(dotId, width, y, x, velocity, color, status, points) {
   this.dotId = dotId;
   this.width = width;
   this.y = y;
@@ -17,6 +17,7 @@ function Dot(dotId, width, y, x, velocity, color, status) {
   this.velocity = velocity;
   this.color = color;
   this.status = status;
+  this.points = points;
 }
 
 class Game extends PureComponent {
@@ -54,6 +55,12 @@ class Game extends PureComponent {
     });
   }
 
+  normalizeRange(val, min, max) {
+    // TODO: return inverse value (i.e. 7 = 3)
+    const delta = max - min;
+    return Math.round((val - min) / delta);
+  }
+
   addDot() {
     const dotWidth = this.getRandomIntInclusive(minWidth, maxWidth);
     const dotY = -(dotWidth * 2); // start off canvas
@@ -61,6 +68,7 @@ class Game extends PureComponent {
     const velocity = this.getRandomIntInclusive(minVelocity, maxVelocity);
     const color = '#000';
     const status = 1; // 1=show, 2=remove
+    const points = this.normalizeRange(dotWidth, 1, 10);
     // add random properties
     dotList[dotId++] = new Dot(
       dotId,
@@ -70,6 +78,7 @@ class Game extends PureComponent {
       velocity,
       color,
       status,
+      points,
     );
   }
 
@@ -90,7 +99,6 @@ class Game extends PureComponent {
 
     dotList.forEach((dot, i) => {
       if (this.isDotClicked(pos, dot)) {
-        console.log(dot);
         // TODO: allow only one click if touching
         dot.color = 'red';
         dot.status = 0;
@@ -100,7 +108,7 @@ class Game extends PureComponent {
 
   isDotClicked(pos, dot) {
     return (
-      Math.sqrt((pos.x - dot.x) ** 2 + (pos.y - dot.y) ** 2) < dot.width * 2
+      Math.sqrt((pos.x - dot.x) ** 2 + (pos.y - dot.y) ** 2) < dot.width * 1.1
     );
   }
 
@@ -133,9 +141,11 @@ class Game extends PureComponent {
       that.drawDot();
       that.collisionDetection();
       // set new dot position
-      dotList.forEach(dot => {
-        dot.y = ~~dot.y + dot.velocity;
-      });
+      for (let i = 0, len = dotList.length; i < len; i++) {
+        if (dotList[i]) {
+          dotList[i].y = dotList[i].y = ~~dotList[i].y + dotList[i].velocity;
+        }
+      }
 
       window.requestAnimationFrame(draw);
     }

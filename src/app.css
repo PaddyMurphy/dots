@@ -80,7 +80,9 @@ th {
   .app-menu {
     background: #1d85f0;
     display: flex;
-    padding: 20px; }
+    padding: 20px;
+    position: absolute;
+    width: 100vw; }
   .app-main {
     flex: 1; }
   .app-game {
