@@ -11,6 +11,11 @@ $app-primary: #1d85f0;
   flex-direction: column;
   height: 100vh;
 
+  &-btn {
+    cursor: pointer;
+    font-size: 18px;
+  }
+
   &-menu {
     background: $app-primary;
     display: flex;

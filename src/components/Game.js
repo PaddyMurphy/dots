@@ -4,21 +4,47 @@ let canvas, ctx;
 let dotId = 1;
 let dotCount = 1;
 let dotList = [];
-let minVelocity = 1;
-let maxVelocity = 3;
+let velocity = 10;
+let minVelocity = 10;
+let maxVelocity = 100;
 let minWidth = 10;
 let maxWidth = 30;
+let started = false;
+let paused = false;
 
-function Dot(dotId, width, y, x, velocity, color, status, points) {
+function Dot(dotId, width, y, x, color, status, points) {
   this.dotId = dotId;
   this.width = width;
   this.y = y;
   this.x = x;
-  this.velocity = velocity;
+  this.velocity = velocity; // velocity is constant
   this.color = color;
   this.status = status;
   this.points = points;
 }
+
+const Button = props => {
+  return (
+    <button className="app-btn" {...props}>
+      Start
+    </button>
+  );
+};
+
+const Range = props => {
+  return (
+    <input
+      type="range"
+      id="app-slider"
+      name="app-slider"
+      min={minVelocity}
+      max={maxVelocity}
+      defaultValue={velocity}
+      step="1"
+      {...props}
+    />
+  );
+};
 
 class Game extends PureComponent {
   constructor(props) {
@@ -63,9 +89,8 @@ class Game extends PureComponent {
 
   addDot() {
     const dotWidth = this.getRandomIntInclusive(minWidth, maxWidth);
-    const dotY = -(dotWidth * 2); // start off canvas
+    const dotY = dotWidth; // start off canvas
     const dotX = this.getRandomIntInclusive(1, canvas.width);
-    const velocity = this.getRandomIntInclusive(minVelocity, maxVelocity);
     const color = '#000';
     const status = 1; // 1=show, 2=remove
     const points = this.normalizeRange(dotWidth, 1, 10);
@@ -75,7 +100,6 @@ class Game extends PureComponent {
       dotWidth,
       dotY,
       dotX,
-      velocity,
       color,
       status,
       points,
@@ -83,12 +107,19 @@ class Game extends PureComponent {
   }
 
   initializeCanvas() {
+    const slider = document.getElementById('app-slider');
     canvas = document.getElementById('game');
-    canvas.height = (window.innerHeight * 400) / 480;
+    canvas.height = window.innerHeight;
     canvas.width = window.innerWidth;
     ctx = canvas.getContext('2d');
     // events
     canvas.addEventListener('click', this.clickDot, false);
+    slider.addEventListener('change', this.sliderChange, false);
+  }
+
+  sliderChange(e) {
+    console.log(e.target.valueAsNumber);
+    velocity = e.target.valueAsNumber;
   }
 
   clickDot(e) {
@@ -100,7 +131,6 @@ class Game extends PureComponent {
     dotList.forEach((dot, i) => {
       if (this.isDotClicked(pos, dot)) {
         // TODO: allow only one click if touching
-        dot.color = 'red';
         dot.status = 0;
       }
     });
@@ -131,6 +161,10 @@ class Game extends PureComponent {
     }
   }
 
+  toggleGame(event) {
+    paused = !paused;
+  }
+
   runGame() {
     const that = this;
 
@@ -142,8 +176,9 @@ class Game extends PureComponent {
       that.collisionDetection();
       // set new dot position
       for (let i = 0, len = dotList.length; i < len; i++) {
-        if (dotList[i]) {
-          dotList[i].y = dotList[i].y = ~~dotList[i].y + dotList[i].velocity;
+        if (dotList[i] && !paused) {
+          // TODO: normalize velocity for correct timing
+          dotList[i].y = dotList[i].y = ~~dotList[i].y + velocity / 10;
         }
       }
 
@@ -159,7 +194,20 @@ class Game extends PureComponent {
   }
 
   render() {
-    return <canvas id="game" />;
+    return (
+      <React.Fragment>
+        <div className="app-menu">
+          <div className="app-score">0</div>
+          <Button onClick={this.toggleGame} />
+          <Range />
+        </div>
+        <div className="app-main">
+          <div className="app-game">
+            <canvas id="game" />
+          </div>
+        </div>
+      </React.Fragment>
+    );
   }
 }
 
