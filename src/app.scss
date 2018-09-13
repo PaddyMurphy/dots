@@ -1,0 +1,27 @@
+@import './css/_minireset.scss';
+
+// variables
+$default-padding: 20px;
+// colors
+$app-primary: #1d85f0;
+
+.app {
+  background: #eee;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+
+  &-menu {
+    background: $app-primary;
+    display: flex;
+    padding: $default-padding;
+  }
+
+  &-main {
+    flex: 1;
+  }
+
+  &-game {
+    background: #fff;
+  }
+}
